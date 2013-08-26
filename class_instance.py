@@ -1,11 +1,23 @@
+'''
+Chris Jordan
+IVR polling utilities
+
+A class for ec2 instances.
+
+'''
+
 from boto import ec2
 from boto.ec2.connection import EC2Connection
-from boto.ec2.address import Address
-import paramiko
-import time, os, glob, math, sys
+from paramiko import SSHClient
+import time, os, glob, sys
+
 
 class instance:
-
+"""
+wrapper utility for aws ec2 instance utilities (boto)
+allows for some basic functions - create an instance, terminate an instance, handle creation, association, and dissassociation of ip addresses
+additionally, has a utility to open ssh and sftp connections to that instance (paramiko)
+"""
         def __init__(self, access_key, secret_key, ip_address=None):
                 #save my ec2 connection info
                 self.access_key = access_key
@@ -35,10 +47,16 @@ class instance:
 
 
                         public_dns = "ec2-%s-%s-%s-%s.compute-1.amazonaws.com" % (self.ip_address.split('.')[0], self.ip_address.split('.')[1], self.ip_address.split('.')[2], self.ip_address.split('.')[3])
-                        
-                        
-                        
+                        self.public_dns = public_dns.encode('ascii', 'ignore')
+
+
+
         def new_instance(self, size, ami_name, sec_group, key_name):
+                """
+                create a new ec2 instance
+                assign it an ip
+                """
+
                 #save for later
                 self.sec_group = [sec_group] #yes it has to be an array
                 self.key_name = key_name
@@ -91,30 +109,47 @@ class instance:
                 public_dns = "ec2-%s-%s-%s-%s.compute-1.amazonaws.com" % (self.ip_address.split('.')[0], self.ip_address.split('.')[1], self.ip_address.split('.')[2], self.ip_address.split('.')[3])
                 self.public_dns = public_dns.encode('ascii', 'ignore')
 
-                for i in range(7):
+                for i in range (7):
                         print "your image is active, and it will be accessible in %s minutes" % str(3-i/2)
                         time.sleep(30)
 
 
 
         def connect(self, user, key_path):
+                """
+                initiate a secure paramiko connection to the instance
+                """
+
 
                 self.user = user
 
-                self.sshconn = paramiko.SSHClient()
+                self.sshconn = SSHClient()
                 self.sshconn.set_missing_host_key_policy(paramiko.AutoAddPolicy())
                 self.sshconn.connect(hostname=self.ip_address, username=self.user, key_filename=key_path)
 
-        def command(self, command):
-                pass
 
 
-
-        def put(self, fileNames, localPath=None, remotePath=None):
+        def cmd(self, command):
+                """
+                run a secure shell command
+                """
 
                 if self.sshconn is None:
                         print "you need to initiate a connection before running this function"
 
+                stdin, stdout, stderr = self.sshconn.exec_command(command)
+
+
+
+
+        def put(self, fileNames, localPath=None, remotePath=None):
+                """
+                sftp put files
+                """
+
+
+                if self.sshconn is None:
+                        print "you need to initiate a connection before running this function"
 
                 if remotePath is None:
                         remotePath = "/home/%s/" % self.user
@@ -136,6 +171,9 @@ class instance:
 
 
         def get(self, fileNames, localPath=None, remotePath=None):
+                """
+                sftp get files
+                """
 
                 if self.sshconn is None:
                         print "you need to initiate a connection before running this function"
@@ -147,8 +185,8 @@ class instance:
                 if localPath is None:
                         localPath = "%s/" % os.getcwd()
 
-                ftp = self.sshconn.open_sftp()
 
+                ftp = self.sshconn.open_sftp()
 
 
                 for getfile in fileNames:
@@ -161,9 +199,12 @@ class instance:
                 print "downloads complete"
 
 
-        def terminate(self):
 
-                #kill the instance associated with this object
+        def terminate(self):
+                """
+                terminate the instance associated with this object, and release its ip address
+                """
+
                 self.ec2conn.terminate_instances(instance_ids=[self.instance_name])
 
                 #release the associated ip
