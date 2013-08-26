@@ -167,5 +167,5 @@ class instance:
                 print "downloads complete"
 
 
-
-       def terminate_instance():
+        def terminate_instance():
+                pass
