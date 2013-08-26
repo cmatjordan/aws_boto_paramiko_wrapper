@@ -13,11 +13,11 @@ import time, os, glob, sys
 
 
 class instance:
-"""
-wrapper utility for aws ec2 instance utilities (boto)
-allows for some basic functions - create an instance, terminate an instance, handle creation, association, and dissassociation of ip addresses
-additionally, has a utility to open ssh and sftp connections to that instance (paramiko)
-"""
+        """
+        wrapper utility for aws ec2 instance utilities (boto)
+        allows for some basic functions - create an instance, terminate an instance, handle creation, association, and dissassociation of ip addresses
+        additionally, has a utility to open ssh and sftp connections to that instance (paramiko)
+        """
         def __init__(self, access_key, secret_key, ip_address=None):
                 #save my ec2 connection info
                 self.access_key = access_key
