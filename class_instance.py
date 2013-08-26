@@ -8,7 +8,7 @@ A class for ec2 instances.
 
 from boto import ec2
 from boto.ec2.connection import EC2Connection
-from paramiko import SSHClient
+from paramiko import SSHClient, AutoAddPolicy
 import time, os, glob, sys
 
 
@@ -124,7 +124,7 @@ class instance:
                 self.user = user
 
                 self.sshconn = SSHClient()
-                self.sshconn.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                self.sshconn.set_missing_host_key_policy(AutoAddPolicy())
                 self.sshconn.connect(hostname=self.ip_address, username=self.user, key_filename=key_path)
 
 
