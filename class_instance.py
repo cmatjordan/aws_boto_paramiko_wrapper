@@ -116,7 +116,6 @@ class instance:
                         print "you need to initiate a connection before running this function"
 
 
-                #set the default toPath, since we can't actually use self in the function call line defaults
                 if remotePath is None:
                         remotePath = "/home/%s/" % self.user
 
@@ -126,8 +125,6 @@ class instance:
                 ftp = self.sshconn.open_sftp()
 
 
-                #get all the desired files
-                #upload them to the home directory
                 for putfile in fileNames:
                         print "uploading %s%s...." % (localPath, putfile)
                         try:
@@ -144,7 +141,6 @@ class instance:
                         print "you need to initiate a connection before running this function"
 
 
-                #set the default toPath, since we can't actually use self in the function call line defaults
                 if remotePath is None:
                         remotePath = "/home/%s/" % self.user
 
@@ -155,8 +151,6 @@ class instance:
 
 
 
-                #get all the desired files
-                #upload them to the home directory
                 for getfile in fileNames:
                         print "downloading %s%s...." % (remotePath, getfile)
                         try:
