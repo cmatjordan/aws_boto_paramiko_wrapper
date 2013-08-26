@@ -167,5 +167,11 @@ class instance:
                 print "downloads complete"
 
 
-        def terminate_instance():
-                pass
+        def terminate(self):
+
+                #kill the instance associated with this object
+                self.ec2conn.terminate_instances(instance_ids=[self.instance_name])
+
+                #release the associated ip
+                self.ec2conn.release_address(public_ip=self.ip_address)
+
