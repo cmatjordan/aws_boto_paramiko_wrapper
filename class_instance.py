@@ -134,10 +134,14 @@ class instance:
                 run a secure shell command
                 """
 
-                if self.sshconn is None:
+
+                if self.chan is None:
                         print "you need to initiate a connection before running this function"
 
-                stdin, stdout, stderr = self.sshconn.exec_command(command)
+                self.chan = self.sshconn.get_transport().open_session()
+                self.chan.get_pty()
+
+                self.chan.exec_command(command)
 
 
 
