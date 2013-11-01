@@ -1,8 +1,6 @@
 '''
 Chris Jordan
-IVR polling utilities
-
-A class for ec2 instances.
+Amazon ec2 instance handling utilities
 
 '''
 
